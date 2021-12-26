@@ -36,7 +36,7 @@ def login():
     password = request.form.get("password")
     mydb = getDBInfo()
     cursor = mydb.cursor()
-    query = "SELECT user_id AS id FROM user WHERE username='" + username + "'and password='" + password + "'"
+    query = "SELECT user_id AS id FROM user WHERE username='" + username + "' and password='" + password + "'"
     cursor.execute(query)
     result = cursor.fetchone()
     print("QUERY: ", query)
@@ -159,6 +159,138 @@ def send_message():
             mydb.commit()
             mydb.close()
             return json.dumps({'status': 'OK'})
+
+
+# 添加朋友
+@app.route("/api/project/add_friend", methods=["POST"])
+def add_friend():
+    print("-----ACTION: add_friend-----")
+    sender_id = request.form.get("sender_id")
+    receiver_name = request.form.get("receiver_name")
+    print("--REQUEST CONTENT: request id: ", sender_id, ", receive name: ", receiver_name)
+    mydb = getDBInfo()
+    cursor = mydb.cursor()
+
+    # 根据nickname 查看是否存在
+    query = "select user_id FROM user where username='" + receiver_name + "'"
+    cursor.execute(query)
+    receiver_id = cursor.fetchone()
+
+    if receiver_id is None:
+        return json.dumps({'status': '0'})  # 没有该用户
+    print("QUERY: ", query)
+    print("RESULT: ", receiver_id)
+    print("receive id: ", receiver_id['user_id'])
+
+    query = "select count(*) as count FROM relationship where user_id1='" + sender_id + "' and user_id2='" + str(
+        receiver_id['user_id']) + "'"
+    cursor.execute(query)
+    is_friend = cursor.fetchone()
+    print("QUERY: ", query)
+    print("RESULT: ", is_friend)
+    if is_friend['count'] != 0:
+        return json.dumps({'status': '2'})  # 已经添加了
+    else:
+        # print(receive_id['user_id'])
+        query = 'INSERT INTO request_list (sender, receiver) values(' + sender_id + "', " + str(
+            receiver_id['user_id']) + ")"
+        print("QUERY: ", query)
+        cursor.execute(query)
+        mydb.commit()
+        return json.dumps({'status': '1'})  # 已发送请求
+
+    mydb.close()
+
+
+# 获得添加列表
+@app.route("/api/project/get_friend_requests", methods=["GET"])
+def get_friend_request():
+    print("-----ACTION: get_friend_request-----")
+    user_id = request.args.get("user_id")
+    mydb = getDBInfo()
+    cursor = mydb.cursor()
+    query = "select username from user where user_id=" \
+            "(select sender from request_list where receiver=" + user_id + "and status=0)"
+    cursor.execute(query)
+    request_users = cursor.fetchall()
+    print("QUERY: ", query)
+    print("RESULT: ", request_users)
+    mydb.close()
+    return json.dumps({'status': 'ok', 'data': request_users})  # 已经添加了
+
+
+# 获得联系人列表
+@app.route("/api/project/get_friends", methods=["GET"])
+def get_friends():
+    print("-----ACTION: get_friends-----")
+    user_id = request.args.get("user_id")
+    mydb = getDBInfo()
+    cursor = mydb.cursor()
+    query = "select username FROM user where user_id=(select user_id_2 from friends where user_id_1=" + user_id + ")"
+    cursor.execute(query)
+    all_friends = cursor.fetchall()
+    print("QUERY: ", query)
+    print("RESULT: ", all_friends)
+    mydb.close()
+
+    return json.dumps({'status': 'ok', 'data': all_friends})  # 已经添加了
+
+
+# 添加好友操作（接受或拒绝 接受1 拒绝0）    CHECK
+@app.route("/api/project/accept_or_refuse", methods=["GET"])
+def accpet_or_refuse():
+    print("-----ACTION: accept_or_refuse-----")
+    operation = request.args.get("operation")
+    request_name = request.args.get("request_name")
+    receiver_id = request.args.get("receiver_id")
+
+    print("operation: ", operation)
+    print("request name: ", request_name)
+    print("receive id: ", receiver_id)
+
+    mydb = getDBInfo()
+    cursor = mydb.cursor()
+    # 先找出该用户名对应的id
+    query = "SELECT user_id FROM user WHERE username=" + request_name
+    cursor.execute(query)
+    result = cursor.fetchone()
+    print("QUERY: ", query)
+    print("RESULT: ", result)
+    request_id = result['user_id']
+    print("request id: ", request_id)
+
+    # waiting_list 删除该记录
+    query = "delete FROM request_list WHERE receiver=" + str(receiver_id) + \
+            " and sender=" + str(request_id)
+    print("QUERY: ", query)
+    cursor.execute(query)
+    query = "delete FROM waiting_list WHERE receive_user_id=" + str(request_id) + \
+            " and request_user_id=" + str(receiver_id)
+    print("QUERY: ", query)
+    cursor.execute(query)
+    mydb.commit()
+
+    if operation == '1':
+        print("--Accept--")
+        query = "INSERT INTO friends values(" + str(request_id) + "," + str(receiver_id) + ")"
+        print("QUERY: ", query)
+        cursor.execute(query)
+        query = "INSERT INTO friends values(" + str(receiver_id) + "," + str(request_id) + ")"
+        print("QUERY: ", query)
+        cursor.execute(query)
+        mydb.commit()
+
+    else:
+        print("--Refuse--")
+
+    # query = "select nickname FROM relationship,user where user_id1=" + str(user_id) +" and user_id=user_id2"
+    # print(query)
+    # cursor.execute(query)
+    # all_friends = cursor.fetchall()
+
+    mydb.close()
+
+    return json.dumps({'status': 'ok'})  # 已经添加了
 
 
 # get db connect
