@@ -176,7 +176,10 @@ def get_rooms():
     print("RESULT: ", result)
     mydb.commit()
     mydb.close()
-    return json.dumps({'status': 'ok', 'data': result})
+    rooms_data = []
+    for user in result:
+        rooms_data.append({'username': user[0], 'user_id': user[1]})
+    return json.dumps({'status': 'ok', 'data': rooms_data})
 
 
 # 获得对应好友的聊天消息
