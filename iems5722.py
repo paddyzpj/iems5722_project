@@ -182,7 +182,7 @@ def add_friend():
     print("RESULT: ", receiver_id)
     print("receiver id: ", receiver_id[0])
 
-    query = "select count(*) as count FROM relationship where user_id1='" + sender_id + "' and user_id2='" + str(
+    query = "select count(*) as count FROM friends where user_id1='" + sender_id + "' and user_id2='" + str(
         receiver_id[0]) + "'"
     cursor.execute(query)
     is_friend = cursor.fetchone()
@@ -264,8 +264,8 @@ def accpet_or_refuse():
             " and sender=" + str(request_id)
     print("QUERY: ", query)
     cursor.execute(query)
-    query = "delete FROM waiting_list WHERE receive_user_id=" + str(request_id) + \
-            " and request_user_id=" + str(receiver_id)
+    query = "delete FROM request_list WHERE receiver=" + str(request_id) + \
+            " and sender=" + str(receiver_id)
     print("QUERY: ", query)
     cursor.execute(query)
     mydb.commit()
