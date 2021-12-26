@@ -188,7 +188,7 @@ def add_friend():
     is_friend = cursor.fetchone()
     print("QUERY: ", query)
     print("RESULT: ", is_friend)
-    if is_friend['count'] != 0:
+    if is_friend[0] != 0:
         return json.dumps({'status': '2'})  # 已经添加了
     else:
         # print(receive_id['user_id'])
