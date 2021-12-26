@@ -20,9 +20,9 @@ def register():
     password = request.form.get("password")
     mydb = getDBInfo()
     cursor = mydb.cursor()
-    query = "INSERT INTO user (username, password) VALUES (%s, %s)"
+    query = "INSERT INTO user (username, password) VALUES ('" + username + "' , '" + password + "')"
     print("QUERY: ", query)
-    cursor.execute(query, [username, password])
+    cursor.execute(query)
     mydb.commit()
     mydb.close()
     return json.dumps({'status': 'register successfully'})
@@ -36,8 +36,8 @@ def login():
     password = request.form.get("password")
     mydb = getDBInfo()
     cursor = mydb.cursor()
-    query = "SELECT user_id AS id FROM user WHERE username=%s and password=%s"
-    cursor.execute(query, [username, password])
+    query = "SELECT user_id AS id FROM user WHERE username='" + username + "and password='" + password + "'"
+    cursor.execute(query)
     result = cursor.fetchone()
     print("QUERY: ", query)
     print("RESULT: ", result)
