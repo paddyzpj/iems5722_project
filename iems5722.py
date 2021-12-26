@@ -392,7 +392,7 @@ def get_posts():
     # 评论数 默认为0
     mydb = getDBInfo()
     cursor = mydb.cursor()
-    query = "SELECT m.*,n.is_like FROM(" \
+    query = "SELECT m.*,n.if_like FROM(" \
             "SELECT posts.*,username FROM posts,user WHERE posts.user_id IN (" \
             "select DISTINCT(user_id_2) AS user_id FROM friends where " \
             "user_id_1 = " + user_id + " OR user_id_2=" + user_id + ") AND posts.user_id = user.user_id) as m " \
