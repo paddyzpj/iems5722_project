@@ -231,10 +231,13 @@ def get_friends():
     cursor = mydb.cursor()
     query = "select username FROM user where user_id=(select user_id_2 from friends where user_id_1=" + user_id + ")"
     cursor.execute(query)
-    all_friends = cursor.fetchall()
+    result = cursor.fetchall()
     print("QUERY: ", query)
-    print("RESULT: ", all_friends)
+    print("RESULT: ", result)
     mydb.close()
+    all_friends = []
+    for user in result:
+        all_friends.append({'username': user[0]})
 
     return json.dumps({'status': 'ok', 'data': all_friends})  # 已经添加了
 
