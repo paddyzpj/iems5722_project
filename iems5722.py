@@ -212,10 +212,13 @@ def get_friend_request():
     query = "select username from user where user_id=" \
             "(select sender from request_list where receiver=" + user_id + " and status=0)"
     cursor.execute(query)
-    request_users = cursor.fetchall()
+    result = cursor.fetchall()
     print("QUERY: ", query)
-    print("RESULT: ", request_users)
+    print("RESULT: ", result)
     mydb.close()
+    request_users = []
+    for user in result:
+        request_users.append({'username': user[0]})
     return json.dumps({'status': 'ok', 'data': request_users})  # 已经添加了
 
 
