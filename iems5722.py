@@ -193,7 +193,7 @@ def add_friend():
     else:
         # print(receive_id['user_id'])
         query = 'INSERT INTO request_list (sender, receiver) values(' + sender_id + "', " + str(
-            receiver_id['user_id']) + ")"
+            receiver_id[0]) + ")"
         print("QUERY: ", query)
         cursor.execute(query)
         mydb.commit()
