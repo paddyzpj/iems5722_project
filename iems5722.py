@@ -210,7 +210,7 @@ def get_friend_request():
     mydb = getDBInfo()
     cursor = mydb.cursor()
     query = "select username from user where user_id=" \
-            "(select sender from request_list where receiver=" + user_id + "and status=0)"
+            "(select sender from request_list where receiver=" + user_id + " and status=0)"
     cursor.execute(query)
     request_users = cursor.fetchall()
     print("QUERY: ", query)
