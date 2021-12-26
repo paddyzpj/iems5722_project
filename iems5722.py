@@ -46,7 +46,7 @@ def login():
     if len(result) == 0:
         return json.dumps({'status': 'login failed'})
     else:
-        return json.dumps({'status': 'ok', 'id': int(result["id"])})
+        return json.dumps({'status': 'ok', 'id': str(result[0])})
 
 
 # /api/a4/submit_push_token
