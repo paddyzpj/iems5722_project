@@ -25,7 +25,7 @@ def register():
     cursor.execute(query)
     mydb.commit()
     mydb.close()
-    return json.dumps({'status': 'register successfully'})
+    return json.dumps({'status': 'ok'})
 
 
 # 用户登入
@@ -46,7 +46,7 @@ def login():
     if len(result) == 0:
         return json.dumps({'status': 'login failed'})
     else:
-        return json.dumps({'status': 'ok', 'id': result["id"]})
+        return json.dumps({'status': 'ok', 'id': int(result["id"])})
 
 
 # /api/a4/submit_push_token
