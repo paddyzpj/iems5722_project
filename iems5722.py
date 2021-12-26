@@ -406,7 +406,8 @@ def get_posts():
     for post in result:
         info.append(
             {'post_id': post[0], 'user_id': post[1], 'post_content': post[2], 'post_time': post[3], 'likes': post[4],
-             'is_like': post[5]})
+             'username': post[5],
+             'is_like': post[6]})
     return json.dumps({'status': 'ok', 'data': info})  # 发送朋友圈成功
 
 
