@@ -37,7 +37,7 @@ def login():
     mydb = getDBInfo()
     cursor = mydb.cursor()
     query = "SELECT user_id AS id FROM user WHERE username='%s' and password='%s'"
-    cursor.execute(query)
+    cursor.execute(query, [username, password])
     result = cursor.fetchone()
     print("QUERY: ", query)
     print("RESULT: ", result)
