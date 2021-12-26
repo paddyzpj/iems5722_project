@@ -192,7 +192,7 @@ def add_friend():
         return json.dumps({'status': '2'})  # 已经添加了
     else:
         # print(receive_id['user_id'])
-        query = 'INSERT INTO request_list (sender, receiver) values(' + sender_id + "', " + str(
+        query = "INSERT INTO request_list (sender, receiver) values(" + sender_id + ", " + str(
             receiver_id[0]) + ")"
         print("QUERY: ", query)
         cursor.execute(query)
