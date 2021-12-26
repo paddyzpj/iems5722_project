@@ -209,7 +209,7 @@ def get_friend_request():
     user_id = request.args.get("user_id")
     mydb = getDBInfo()
     cursor = mydb.cursor()
-    query = "select username from user where user_id=" \
+    query = "select username from user where user_id in " \
             "(select sender from request_list where receiver=" + user_id + " and status=0)"
     cursor.execute(query)
     result = cursor.fetchall()
@@ -229,7 +229,7 @@ def get_friends():
     user_id = request.args.get("user_id")
     mydb = getDBInfo()
     cursor = mydb.cursor()
-    query = "select username FROM user where user_id=(select user_id_2 from friends where user_id_1=" + user_id + ")"
+    query = "select username FROM user where user_id in (select user_id_2 from friends where user_id_1=" + user_id + ")"
     cursor.execute(query)
     result = cursor.fetchall()
     print("QUERY: ", query)
