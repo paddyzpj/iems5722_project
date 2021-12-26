@@ -180,10 +180,10 @@ def add_friend():
         return json.dumps({'status': '0'})  # 没有该用户
     print("QUERY: ", query)
     print("RESULT: ", receiver_id)
-    print("receive id: ", receiver_id['user_id'])
+    print("receiver id: ", receiver_id[0])
 
     query = "select count(*) as count FROM relationship where user_id1='" + sender_id + "' and user_id2='" + str(
-        receiver_id['user_id']) + "'"
+        receiver_id[0]) + "'"
     cursor.execute(query)
     is_friend = cursor.fetchone()
     print("QUERY: ", query)
@@ -256,7 +256,7 @@ def accpet_or_refuse():
     result = cursor.fetchone()
     print("QUERY: ", query)
     print("RESULT: ", result)
-    request_id = result['user_id']
+    request_id = result[0]
     print("request id: ", request_id)
 
     # waiting_list 删除该记录
