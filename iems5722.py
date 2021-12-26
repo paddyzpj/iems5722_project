@@ -198,7 +198,10 @@ def get_messages():
     print("RESULT: ", result)
     mydb.commit()
     mydb.close()
-    return json.dumps({'status': 'ok', 'data': result})
+    messages_detail = []
+    for message in result:
+        messages_detail.append({'sender': message[1], 'receiver': message[2], 'message': message[3], 'message_time': message[4]})
+    return json.dumps({'status': 'ok', 'data': messages_detail})
 
 
 # 发送消息
