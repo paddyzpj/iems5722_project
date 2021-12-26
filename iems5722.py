@@ -182,7 +182,7 @@ def add_friend():
     print("RESULT: ", receiver_id)
     print("receiver id: ", receiver_id[0])
 
-    query = "select count(*) as count FROM friends where user_id1='" + sender_id + "' and user_id2='" + str(
+    query = "select count(*) as count FROM friends where user_id_1='" + sender_id + "' and user_id_2='" + str(
         receiver_id[0]) + "'"
     cursor.execute(query)
     is_friend = cursor.fetchone()
