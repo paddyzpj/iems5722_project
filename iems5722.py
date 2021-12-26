@@ -161,7 +161,7 @@ def submit_push_token():
 #             return json.dumps({'status': 'OK'})
 
 
-#获取通讯录上的所有人
+# 获取通讯录上的所有人
 @app.route("/api/project/rooms", methods=["GET"])
 def get_rooms():
     print("-----ACTION: get_rooms-----")
@@ -200,7 +200,8 @@ def get_messages():
     mydb.close()
     messages_detail = []
     for message in result:
-        messages_detail.append({'sender': message[1], 'receiver': message[2], 'message': message[3], 'message_time': message[4]})
+        messages_detail.append(
+            {'sender': message[1], 'receiver': message[2], 'message': message[3], 'message_time': message[4]})
     return json.dumps({'status': 'ok', 'data': messages_detail})
 
 
@@ -361,6 +362,92 @@ def accpet_or_refuse():
     mydb.close()
 
     return json.dumps({'status': 'ok'})  # 已经添加了
+
+
+# 发朋友圈
+@app.route("/api/project/posts", methods=["POST"])
+def new_posts():
+    print("-----ACTION: new posts-----")
+    user_id = request.form.get("user_id")
+    content = request.form.get("posts_content")
+
+    # 点赞数 默认为0
+    # 评论数 默认为0
+    mydb = getDBInfo()
+    cursor = mydb.cursor()
+    query = 'INSERT INTO posts (user_id, content) values(' + user_id + ",'" + content + "')"
+    print("QUERY: ", query)
+    cursor.execute(query)
+    mydb.commit()
+    mydb.close()
+    return json.dumps({'status': 'ok'})  # 发送朋友圈成功
+
+
+# 获取朋友圈列表
+@app.route("/api/project/posts", methods=["GET"])
+def get_posts():
+    print("-----ACTION: get posts-----")
+    user_id = request.args.get("user_id")
+    # 点赞数 默认为0
+    # 评论数 默认为0
+    mydb = getDBInfo()
+    cursor = mydb.cursor()
+    query = "SELECT m.*,n.is_like FROM(" \
+            "SELECT posts.*,username FROM posts,user WHERE posts.user_id IN (" \
+            "select DISTINCT(user_id_2) AS user_id FROM friends where " \
+            "user_id_1 = " + user_id + " OR user_id_2=" + user_id + ") AND posts.user_id = user.user_id) as m " \
+                                                                    "left join (SELECT * FROM likes_info WHERE user_id=" + user_id + ") AS n ON m.post_id=n.post_id ORDER BY post_time DESC"
+    print("QUERY: ", query)
+    cursor.execute(query)
+    result = cursor.fetchall()
+    print("RESULT: ", result)
+    mydb.close()
+    info = []
+    for post in result:
+        info.append(
+            {'post_id': post[0], 'user_id': post[1], 'post_content': post[2], 'post_time': post[3], 'likes': post[4],
+             'is_like': post[5]})
+    return json.dumps({'status': 'ok', 'data': info})  # 发送朋友圈成功
+
+
+# 点赞
+@app.route("/api/project/like", methods=["POST"])
+def give_like():
+    print("-----ACTION: like-----")
+    user_id = request.form.get("user_id")
+    post_id = request.form.get("post_id")
+    mydb = getDBInfo()
+    cursor = mydb.cursor()
+    query = "REPLACE INTO likes_info VALUES(" + post_id + "," + user_id + ",1)"
+    print("QUERY: ", query)
+    # 将表中的值+1
+    query = "UPDATE posts SET likes=likes+1 WHERE post_id = " + post_id
+    print("QUERY: ", query)
+    cursor.execute(query)
+    mydb.commit()
+    mydb.close()
+
+    return json.dumps({'status': 'ok'})
+
+
+# 取消点赞
+@app.route("/api/project/dislike", methods=["POST"])
+def cancel_like():
+    print("-----ACTION: dislike-----")
+    user_id = request.form.get("user_id")
+    post_id = request.form.get("post_id")
+    mydb = getDBInfo()
+    cursor = mydb.cursor()
+    query = "DELETE FROM likes_info WHERE post_id=" + post_id + " AND user_id=" + user_id
+    print("QUERY: ", query)
+    cursor.execute(query)
+    query = "UPDATE posts SET likes=likes-1 WHERE post_id = " + post_id
+    print("QUERY: ", query)
+    cursor.execute(query)
+    mydb.commit()
+    mydb.close()
+
+    return json.dumps({'status': 'ok'})
 
 
 # get db connect
