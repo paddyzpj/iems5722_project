@@ -36,7 +36,7 @@ def login():
     password = request.form.get("password")
     mydb = getDBInfo()
     cursor = mydb.cursor()
-    query = "SELECT user_id AS id FROM user WHERE username='" + username + "and password='" + password + "'"
+    query = "SELECT user_id AS id FROM user WHERE username='" + username + "'and password='" + password + "'"
     cursor.execute(query)
     result = cursor.fetchone()
     print("QUERY: ", query)
