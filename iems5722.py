@@ -43,7 +43,7 @@ def login():
     print("RESULT: ", result)
     mydb.commit()
     mydb.close()
-    if len(result) == 0:
+    if :
         return json.dumps({'status': 'login failed'})
     else:
         return json.dumps({'status': 'ok', 'id': str(result[0])})
